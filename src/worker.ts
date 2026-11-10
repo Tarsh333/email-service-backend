@@ -72,6 +72,9 @@ export function startWorker() {
     concurrency: config.concurrency,
     // min delay between sends -> 1 job per minDelayMs
     limiter: { max: 1, duration: config.minDelayMs },
+    // cut idle redis polling (matters on hosted redis with command quotas)
+    drainDelay: 300,          // seconds; idle poll waits up to 5 min (default 5s)
+    stalledInterval: 300_000, // ms; stalled-job check every 5 min (default 30s)
   });
 
   worker.on("completed", (job) => console.log(`job ${job.id} done`));
